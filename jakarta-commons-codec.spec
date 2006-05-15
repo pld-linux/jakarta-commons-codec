@@ -1,5 +1,5 @@
-%define base_name  codec
-%define short_name commons-%{base_name}
+%define	base_name	codec
+%define	short_name	commons-%{base_name}
 Summary:	Jakarta Commons Codec Package
 Name:		jakarta-%{short_name}
 Version:	1.3
@@ -21,7 +21,7 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 Commons Codec is an attempt to provide definitive implementations of
 commonly used encoders and decoders.
 
-%package        javadoc
+%package javadoc
 Summary:	Javadoc for %{name}
 Group:		Documentation
 
