@@ -11,7 +11,7 @@ Source0:	http://www.apache.org/dist/jakarta/commons/codec/source/commons-codec-%
 # Source0-md5:	af3c3acf618de6108d65fcdc92b492e1
 Patch0:		%{name}-buildscript.patch
 URL:		http://jakarta.apache.org/commons/codec/
-BuildRequires:	jakarta-ant >= 1.6.2
+BuildRequires:	ant >= 1.6.2
 BuildRequires:	junit
 Provides:	%{short_name}
 Obsoletes:	commons-codec
