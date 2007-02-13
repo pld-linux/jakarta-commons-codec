@@ -1,7 +1,7 @@
 %define	base_name	codec
 %define	short_name	commons-%{base_name}
 Summary:	Jakarta Commons Codec Package
-Summary(pl.UTF-8):   Pakiet Jakarta Commons Codec
+Summary(pl.UTF-8):	Pakiet Jakarta Commons Codec
 Name:		jakarta-%{short_name}
 Version:	1.3
 Release:	3
@@ -28,7 +28,7 @@ powszechnie używanych koderów i dekoderów.
 
 %package javadoc
 Summary:	Javadoc for %{name}
-Summary(pl.UTF-8):   Dokumentacja javadoc dla pakietu %{name}
+Summary(pl.UTF-8):	Dokumentacja javadoc dla pakietu %{name}
 Group:		Documentation
 
 %description javadoc
