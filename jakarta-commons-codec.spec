@@ -1,8 +1,7 @@
-%define	base_name	codec
-%define	short_name	commons-%{base_name}
+%include	/usr/lib/rpm/macros.java
 Summary:	Jakarta Commons Codec Package
 Summary(pl.UTF-8):	Pakiet Jakarta Commons Codec
-Name:		jakarta-%{short_name}
+Name:		jakarta-commons-codec
 Version:	1.3
 Release:	3
 License:	Apache Software License
@@ -12,8 +11,12 @@ Source0:	http://www.apache.org/dist/jakarta/commons/codec/source/commons-codec-%
 Patch0:		%{name}-buildscript.patch
 URL:		http://jakarta.apache.org/commons/codec/
 BuildRequires:	ant >= 1.6.2
+BuildRequires:	ant-junit
+BuildRequires:	jpackage-utils
 BuildRequires:	junit
-Provides:	%{short_name}
+BuildRequires:	rpm-javaprov
+BuildRequires:	rpmbuild(macros) >= 1.300
+Provides:	commons-codec
 Obsoletes:	commons-codec
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -30,6 +33,7 @@ powszechnie używanych koderów i dekoderów.
 Summary:	Javadoc for %{name}
 Summary(pl.UTF-8):	Dokumentacja javadoc dla pakietu %{name}
 Group:		Documentation
+Requires:	jpackage-utils
 
 %description javadoc
 Javadoc for %{name}.
@@ -38,7 +42,9 @@ Javadoc for %{name}.
 Dokumentacja javadoc dla pakietu %{name}.
 
 %prep
-%setup -q -n commons-codec-%{version}
+%setup -qc
+touch LICENSE
+cd commons-codec-%{version}
 
 # FIXME Remove SoundexTest which is failing
 # and thus preventing the build to proceed.
@@ -46,55 +52,41 @@ Dokumentacja javadoc dla pakietu %{name}.
 %patch0 -p1
 
 %build
-ant \
-	-Dbuild.sysclasspath=first \
-	-Dconf.home=src/conf \
-	-Dbuild.home=build \
-	-Dsource.home=src/java \
-	-Dtest.home=src/test \
-	-Ddist.home=dist \
-	-Dcomponent.title=%{short_name} \
-	-Dcomponent.version=%{version} \
-	-Dfinal.name=%{name}-%{version} \
-	-Dextension.name=%{short_name} \
-	test jar javadoc
+cd commons-codec-%{version}
+
+export LC_ALL=en_US # source not in ASCII
+
+required_jars="junit"
+export CLASSPATH=$(build-classpath $required_jars)
+
+%ant dist
 
 %install
 rm -rf $RPM_BUILD_ROOT
+cd commons-codec-%{version}
 
 # jars
 install -d $RPM_BUILD_ROOT%{_javadir}
-cp -p dist/%{name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}
-cd $RPM_BUILD_ROOT%{_javadir}
-for jar in *-%{version}*; do
-	ln -sf ${jar} `echo $jar| sed  "s|jakarta-||g"`
-done
-for jar in *-%{version}*; do
-	ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`
-done
-cd -
+cp -a dist/commons-codec-%{version}.jar $RPM_BUILD_ROOT%{_javadir}
+ln -s commons-codec-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/commons-codec.jar
 
 # javadoc
 install -d $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-cp -pr dist/docs/api/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+cp -a dist/docs/api/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} # ghost symlink
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %post javadoc
-rm -f %{_javadocdir}/%{name}
-ln -s %{name}-%{version} %{_javadocdir}/%{name}
-
-%postun javadoc
-if [ "$1" = "0" ]; then
-	rm -f %{_javadocdir}/%{name}
-fi
+ln -sf %{name}-%{version} %{_javadocdir}/%{name}
 
 %files
 %defattr(644,root,root,755)
-%doc RELEASE-NOTES.txt
-%{_javadir}/*
+%doc commons-codec-%{version}/RELEASE-NOTES.txt
+%{_javadir}/*.jar
 
 %files javadoc
 %defattr(644,root,root,755)
 %{_javadocdir}/%{name}-%{version}
+%ghost %{_javadocdir}/%{name}
